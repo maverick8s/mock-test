@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSC PYQ Practice 2025</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background 0.3s;
+    }
+
+    body.dark-mode {
+      background: linear-gradient(135deg, #1e1e2f 0%, #2a2a3e 100%);
+      color: #e0e0e0;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 90%;
+      margin: 40px auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      color: #1A73E8;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    body.dark-mode .header h1 {
+      color: #4a91ff;
+    }
+
+    .progress-overall {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .progress-overall h3 {
+      font-size: 1.5rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    body.dark-mode .progress-overall h3 {
+      color: #e0e0e0;
+    }
+
+    .progress-overall .progress-bar {
+      width: 100%;
+      background: #ddd;
+      height: 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-overall .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1A73E8, #67D1FA);
+      border-radius: 8px;
+      transition: width 0.5s ease-in-out;
+    }
+
+    body.dark-mode .progress-overall .progress-bar {
+      background: #444;
+    }
+
+    body.dark-mode .progress-overall .progress-bar-fill {
+      background: linear-gradient(90deg, #4a91ff, #8ee0ff);
+    }
+
+    .reset-button, .bookmark-section {
+      background: #ff4444;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s, transform 0.2s;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .reset-button:hover, .bookmark-section:hover {
+      background: #cc3333;
+      transform: scale(1.05);
+    }
+
+    body.dark-mode .reset-button, body.dark-mode .bookmark-section {
+      background: #ff5555;
+    }
+
+    body.dark-mode .reset-button:hover, body.dark-mode .bookmark-section:hover {
+      background: #dd4444;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      padding: 10px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    body.dark-mode .theme-toggle {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .theme-toggle img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .category {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body.dark-mode .category {
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
+    }
+
+    .category.bookmarked {
+      background: rgba(255, 215, 0, 0.1);
+    }
+
+    body.dark-mode .category.bookmarked {
+      background: rgba(255, 215, 0, 0.3);
+    }
+
+    .category:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .category h2 {
+      font-size: 1.5rem;
+      color: #333;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    body.dark-mode .category h2 {
+      color: #e0e0e0;
+    }
+
+    .category h2::after {
+      content: '▼';
+      font-size: 0.8rem;
+      transition: transform 0.3s;
+    }
+
+    .category.active h2::after {
+      transform: rotate(180deg);
+    }
+
+    .subcategory {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    .category.active .subcategory {
+      max-height: 1000px;
+    }
+
+    .subcategory h3 {
+      font-size: 1.2rem;
+      color: #1A73E8; /* Same as header h1 */
+      margin: 10px 0;
+      padding-left: 10px;
+      position: relative;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    body.dark-mode .subcategory h3 {
+      color: #4a91ff; /* Same as header h1 in dark mode */
+    }
+
+    .subcategory h3::before {
+      content: '▶';
+      font-size: 0.8rem;
+      margin-right: 10px;
+      transition: transform 0.3s;
+    }
+
+    .subcategory.active h3::before {
+      transform: rotate(90deg);
+    }
+
+    .subject {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      padding-left: 20px;
+    }
+
+    .subcategory.active .subject {
+      max-height: 500px;
+    }
+
+    .subject h4 {
+      font-size: 1rem;
+      color: #777;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .subject h4:hover {
+      color: #1A73E8;
+    }
+
+    body.dark-mode .subject h4 {
+      color: #aaa;
+    }
+
+    body.dark-mode .subject h4:hover {
+      color: #4a91ff;
+    }
+
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      max-width: 600px;
+      width: 90%;
+      animation: slideIn 0.4s ease-in-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translate(-50%, -70%); opacity: 0; }
+      to { transform: translate(-50%, -50%); opacity: 1; }
+    }
+
+    body.dark-mode .popup {
+      background: rgba(0, 0, 0, 0.85);
+      color: #e0e0e0;
+    }
+
+    .popup h3 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #1A73E8;
+    }
+
+    body.dark-mode .popup h3 {
+      color: #4a91ff;
+    }
+
+    .popup .set-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .popup .set-list li {
+      background: #1A73E8;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .popup .set-list li:hover {
+      background: #135ab6;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .popup .set-list li:active {
+      transform: scale(0.95);
+    }
+
+    body.dark-mode .popup .set-list li {
+      background: #4a91ff;
+      box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+    }
+
+    body.dark-mode .popup .set-list li:hover {
+      background: #357abd;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+    }
+
+    .popup button {
+      background: #1A73E8;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 10px auto;
+      display: block;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .popup button:hover {
+      background: #135ab6;
+      transform: scale(1.05);
+    }
+
+    body.dark-mode .popup button {
+      background: #4a91ff;
+    }
+
+    body.dark-mode .popup button:hover {
+      background: #357abd;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 999;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .category-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .category {
+        padding: 15px;
+      }
+
+      .category h2 {
+        font-size: 1.3rem;
+      }
+
+      .subcategory h3 {
+        font-size: 1.1rem;
+      }
+
+      .subject h4 {
+        font-size: 0.9rem;
+      }
+
+      .popup {
+        width: 95%;
+      }
+
+      .popup .set-list {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      }
+
+      .popup .set-list li {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="theme-toggle" onclick="toggleTheme()">
+    <img src="https://img.icons8.com/ios-filled/24/000000/sun.png" alt="Toggle Theme" id="theme-icon">
+  </div>
+  <div class="overlay" id="overlay"></div>
+  <div class="container">
+    <div class="header">
+      <h1>SSC PYQ Practice</h1>
+    </div>
+    <div class="progress-overall">
+      <h3>Overall Progress: <span id="overall-progress-text">0%</span></h3>
+      <div class="progress-bar"><div class="progress-bar-fill" id="overall-progress-bar" style="width: 0%;"></div></div>
+      <button class="reset-button" onclick="resetProgress()">Reset Progress</button>
+    </div>
+    <div class="category-grid">
+      <!-- Static GK -->
+      <div class="category">
+        <h2>Static GK <span class="progress-text">0%</span></h2>
+        <div class="progress-bar"><div class="progress-bar-fill" style="width: 0%;"></div></div>
+        <div class="subcategory">
+          <h3>Cultural</h3>
+          <div class="subject"><h4>Dance</h4></div>
+          <div class="subject"><h4>Arts Personality</h4></div>
+          <div class="subject"><h4>Arts Awards</h4></div>
+          <div class="subject"><h4>Musical Instruments</h4></div>
+          <div class="subject"><h4>Festivals</h4></div>
+          <div class="subject"><h4>Fairs</h4></div>
+          <div class="subject"><h4>Songs</h4></div>
+          <div class="subject"><h4>Painting/Dress/Tribes</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Key Facts</h3>
+          <div class="subject"><h4>First in India/World</h4></div>
+          <div class="subject"><h4>Sports</h4></div>
+          <div class="subject"><h4>Books and Authors</h4></div>
+          <div class="subject"><h4>Famous Personality</h4></div>
+          <div class="subject"><h4>Important Days</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Geographical & Administrative</h3>
+          <div class="subject"><h4>States GK</h4></div>
+          <div class="subject"><h4>Organization</h4></div>
+          <div class="subject"><h4>World GK</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Awards & Schemes</h3>
+          <div class="subject"><h4>Full Forms</h4></div>
+          <div class="subject"><h4>Religious Places</h4></div>
+          <div class="subject"><h4>Awards</h4></div>
+          <div class="subject"><h4>Schemes</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Miscellaneous</h3>
+          <div class="subject"><h4>Important Events</h4></div>
+          <div class="subject"><h4>Founder</h4></div>
+          <div class="subject"><h4>Miscellaneous</h4></div>
+        </div>
+      </div>
+      <!-- General Knowledge -->
+      <div class="category">
+        <h2>General Knowledge <span class="progress-text">0%</span></h2>
+        <div class="progress-bar"><div class="progress-bar-fill" style="width: 0%;"></div></div>
+        <div class="subcategory">
+          <h3>History</h3>
+          <div class="subject"><h4>Ancient History</h4></div>
+          <div class="subject"><h4>Medieval History</h4></div>
+          <div class="subject"><h4>Modern History</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Polity</h3>
+          <div class="subject"><h4>Constitution</h4></div>
+          <div class="subject"><h4>Committee Reports</h4></div>
+          <div class="subject"><h4>Parliament</h4></div>
+          <div class="subject"><h4>Union Executive</h4></div>
+          <div class="subject"><h4>Judiciary</h4></div>
+          <div class="subject"><h4>Government Bodies</h4></div>
+          <div class="subject"><h4>Polity of Neighbouring Countries</h4></div>
+          <div class="subject"><h4>Miscellaneous</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Geography</h3>
+          <div class="subject"><h4>Physical Geography</h4></div>
+          <div class="subject"><h4>Human Geography</h4></div>
+          <div class="subject"><h4>Indian Geography</h4></div>
+          <div class="subject"><h4>World Geography</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Economics</h3>
+          <div class="subject"><h4>Microeconomics</h4></div>
+          <div class="subject"><h4>Macroeconomics</h4></div>
+          <div class="subject"><h4>Indian Economy</h4></div>
+          <div class="subject"><h4>Global Economy</h4></div>
+        </div>
+      </div>
+      <!-- Science -->
+      <div class="category">
+        <h2>Science <span class="progress-text">0%</span></h2>
+        <div class="progress-bar"><div class="progress-bar-fill" style="width: 0%;"></div></div>
+        <div class="subcategory">
+          <h3>Physics</h3>
+          <div class="subject"><h4>Physics</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Chemistry</h3>
+          <div class="subject"><h4>Chemistry</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Biology</h3>
+          <div class="subject"><h4>Human Body</h4></div>
+          <div class="subject"><h4>Plants & Animals</h4></div>
+          <div class="subject"><h4>Deficiency and Diseases</h4></div>
+          <div class="subject"><h4>Plant Kingdom</h4></div>
+          <div class="subject"><h4>Animal Kingdom</h4></div>
+          <div class="subject"><h4>Scientific Name</h4></div>
+          <div class="subject"><h4>Scientific Study</h4></div>
+          <div class="subject"><h4>Cell: Basic Unit of Life</h4></div>
+        </div>
+      </div>
+      <!-- Reasoning -->
+      <div class="category">
+        <h2>Reasoning <span class="progress-text">0%</span></h2>
+        <div class="progress-bar"><div class="progress-bar-fill" style="width: 0%;"></div></div>
+        <div class="subcategory">
+          <h3>Verbal</h3>
+          <div class="subject"><h4>Order and Ranking</h4></div>
+          <div class="subject"><h4>Analogy</h4></div>
+          <div class="subject"><h4>Odd One Out</h4></div>
+          <div class="subject"><h4>Coding Decoding</h4></div>
+          <div class="subject"><h4>Series</h4></div>
+          <div class="subject"><h4>Syllogism</h4></div>
+          <div class="subject"><h4>Statement & Conclusion</h4></div>
+          <div class="subject"><h4>Data Sufficiency</h4></div>
+          <div class="subject"><h4>Blood Relation</h4></div>
+          <div class="subject"><h4>Venn Diagram</h4></div>
+          <div class="subject"><h4>Sitting Arrangement</h4></div>
+          <div class="subject"><h4>Direction & Distance</h4></div>
+          <div class="subject"><h4>Arithmetic Reason</h4></div>
+          <div class="subject"><h4>Mathematical Operations</h4></div>
+          <div class="subject"><h4>Word Arrangement</h4></div>
+          <div class="subject"><h4>Age</h4></div>
+          <div class="subject"><h4>Calendar</h4></div>
+          <div class="subject"><h4>Missing Number</h4></div>
+          <div class="subject"><h4>Inequality</h4></div>
+          <div class="subject"><h4>Puzzle</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Non-Verbal</h3>
+          <div class="subject"><h4>Non-verbal Analogy</h4></div>
+          <div class="subject"><h4>Odd One Out</h4></div>
+          <div class="subject"><h4>Cube & Dice</h4></div>
+          <div class="subject"><h4>Non-verbal Series</h4></div>
+          <div class="subject"><h4>Counting Figure</h4></div>
+          <div class="subject"><h4>Paper Cut & Fold</h4></div>
+          <div class="subject"><h4>Embedded Figure</h4></div>
+          <div class="subject"><h4>Figure Compilation</h4></div>
+          <div class="subject"><h4>Mirror Image</h4></div>
+        </div>
+      </div>
+      <!-- English -->
+      <div class="category">
+        <h2>English <span class="progress-text">0%</span></h2>
+        <div class="progress-bar"><div class="progress-bar-fill" style="width: 0%;"></div></div>
+        <div class="subcategory">
+          <h3>Vocab</h3>
+          <div class="subject"><h4>Phrasal Verb</h4></div>
+          <div class="subject"><h4>Antonyms</h4></div>
+          <div class="subject"><h4>Synonyms</h4></div>
+          <div class="subject"><h4>Idioms</h4></div>
+          <div class="subject"><h4>Spelling Check</h4></div>
+          <div class="subject"><h4>One Word</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Grammar</h3>
+          <div class="subject"><h4>Error</h4></div>
+          <div class="subject"><h4>Sentence Improvement</h4></div>
+          <div class="subject"><h4>Narration</h4></div>
+          <div class="subject"><h4>Voice</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Comprehension</h3>
+          <div class="subject"><h4>Para Jumble</h4></div>
+          <div class="subject"><h4>Fill the Blank</h4></div>
+          <div class="subject"><h4>Cloze Test</h4></div>
+          <div class="subject"><h4>Passage</h4></div>
+        </div>
+      </div>
+      <!-- Mathematics -->
+      <div class="category">
+        <h2>Mathematics <span class="progress-text">0%</span></h2>
+        <div class="progress-bar"><div class="progress-bar-fill" style="width: 0%;"></div></div>
+        <div class="subcategory">
+          <h3>Arithmetic</h3>
+          <div class="subject"><h4>HCF and LCM</h4></div>
+          <div class="subject"><h4>Simplification</h4></div>
+          <div class="subject"><h4>Ratio and Proportion</h4></div>
+          <div class="subject"><h4>Partnership</h4></div>
+          <div class="subject"><h4>Mixture and Alligation</h4></div>
+          <div class="subject"><h4>Work and Time</h4></div>
+          <div class="subject"><h4>Pipes and Cistern</h4></div>
+          <div class="subject"><h4>Time, Speed and Distance</h4></div>
+          <div class="subject"><h4>Race</h4></div>
+          <div class="subject"><h4>Boat and Stream</h4></div>
+          <div class="subject"><h4>Percentage</h4></div>
+          <div class="subject"><h4>Profit and Loss</h4></div>
+          <div class="subject"><h4>Simple Interest</h4></div>
+          <div class="subject"><h4>Compound Interest</h4></div>
+          <div class="subject"><h4>Installment</h4></div>
+          <div class="subject"><h4>Average</h4></div>
+          <div class="subject"><h4>Number System</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Advance</h3>
+          <div class="subject"><h4>Trigonometry</h4></div>
+          <div class="subject"><h4>Height and Distance</h4></div>
+          <div class="subject"><h4>Mensuration</h4></div>
+          <div class="subject"><h4>Geometry</h4></div>
+          <div class="subject"><h4>Algebra</h4></div>
+          <div class="subject"><h4>Coordinate Geometry</h4></div>
+          <div class="subject"><h4>Probability</h4></div>
+          <div class="subject"><h4>Data Interpretation</h4></div>
+          <div class="subject"><h4>Mean Median Mode</h4></div>
+        </div>
+      </div>
+      <!-- Computer -->
+      <div class="category">
+        <h2>Computer <span class="progress-text">0%</span></h2>
+        <div class="progress-bar"><div class="progress-bar-fill" style="width: 0%;"></div></div>
+        <div class="subcategory">
+          <h3>Theory</h3>
+          <div class="subject"><h4>Theory</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>Previous Years Questions</h3>
+          <div class="subject"><h4>Previous Years Questions</h4></div>
+        </div>
+      </div>
+      <!-- Current Affairs -->
+      <div class="category">
+        <h2>Current Affairs <span class="progress-text">0%</span></h2>
+        <div class="progress-bar"><div class="progress-bar-fill" style="width: 0%;"></div></div>
+        <div class="subcategory">
+          <h3>2023</h3>
+          <div class="subject"><h4>2023</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>2024</h3>
+          <div class="subject"><h4>2024</h4></div>
+        </div>
+        <div class="subcategory">
+          <h3>2025</h3>
+          <div class="subject"><h4>2025</h4></div>
+        </div>
+      </div>
+      <!-- Bookmarked Questions -->
+      <div class="category bookmarked">
+        <h2>Bookmarked Questions <span class="progress-text">0</span></h2>
+        <button class="bookmark-section" onclick="viewBookmarks()">View Bookmarks</button>
+      </div>
+    </div>
+  </div>
+  <!-- Popup for Sets -->
+  <div class="popup" id="sets-popup">
+    <h3 id="popup-title"></h3>
+    <ul class="set-list" id="set-list"></ul>
+    <button onclick="closePopup()">Close</button>
+  </div>
+  <script>
+    // Progress data
+    let progressData = JSON.parse(localStorage.getItem('progressData')) || {
+      'static-gk': { total: 0, attempted: 0 },
+      'general-knowledge': { total: 0, attempted: 0 },
+      'science': { total: 0, attempted: 0 },
+      'reasoning': { total: 0, attempted: 0 },
+      'english': { total: 0, attempted: 0 },
+      'mathematics': { total: 0, attempted: 0 },
+      'computer': { total: 0, attempted: 0 },
+      'current-affairs': { total: 0, attempted: 0 }
+    };
+
+    // Sample sets data
+    let setsData = JSON.parse(localStorage.getItem('setsData')) || {
+      'dance': 2,
+      'arts-personality': 2,
+      'arts-awards': 2,
+      'musical-instruments': 2,
+      'festivals': 2,
+      'fairs': 2,
+      'songs': 2,
+      'painting-dress-tribes': 2,
+      'first-in-india-world': 2,
+      'sports': 2,
+      'books-and-authors': 2,
+      'famous-personality': 2,
+      'important-days': 2,
+      'states-gk': 2,
+      'organization': 2,
+      'world-gk': 2,
+      'full-forms': 2,
+      'religious-places': 2,
+      'awards': 2,
+      'schemes': 2,
+      'important-events': 2,
+      'founder': 2,
+      'miscellaneous-static-gk': 2,
+      'ancient-history': 2,
+      'medieval-history': 2,
+      'modern-history': 2,
+      'constitution': 2,
+      'committee-reports': 2,
+      'parliament': 2,
+      'union-executive': 2,
+      'judiciary': 2,
+      'government-bodies': 2,
+      'polity-neighbouring-countries': 2,
+      'miscellaneous-polity': 2,
+      'physical-geography': 2,
+      'human-geography': 2,
+      'indian-geography': 2,
+      'world-geography': 2,
+      'microeconomics': 2,
+      'macroeconomics': 2,
+      'indian-economy': 2,
+      'global-economy': 2,
+      'physics': 2,
+      'chemistry': 2,
+      'human-body': 2,
+      'plants-animals': 2,
+      'deficiency-and-diseases': 2,
+      'plant-kingdom': 2,
+      'animal-kingdom': 2,
+      'scientific-name': 2,
+      'scientific-study': 2,
+      'cell-basic-unit-of-life': 2,
+      'order-and-ranking': 2,
+      'analogy': 2,
+      'odd-one-out': 2,
+      'coding-decoding': 2,
+      'series': 2,
+      'syllogism': 2,
+      'statement-and-conclusion': 2,
+      'data-sufficiency': 2,
+      'blood-relation': 2,
+      'venn-diagram': 2,
+      'sitting-arrangement': 2,
+      'direction-and-distance': 2,
+      'arithmetic-reason': 2,
+      'mathematical-operations': 2,
+      'word-arrangement': 2,
+      'age': 2,
+      'calendar': 2,
+      'missing-number': 2,
+      'inequality': 2,
+      'puzzle': 2,
+      'non-verbal-analogy': 2,
+      'nv-odd-one-out': 2,
+      'cube-and-dice': 2,
+      'non-verbal-series': 2,
+      'counting-figure': 2,
+      'paper-cut-and-fold': 2,
+      'embedded-figure': 2,
+      'figure-compilation': 2,
+      'mirror-image': 2,
+      'phrasal-verb': 2,
+      'antonyms': 2,
+      'synonyms': 2,
+      'idioms': 2,
+      'spelling-check': 2,
+      'one-word': 2,
+      'error': 2,
+      'sentence-improvement': 2,
+      'narration': 2,
+      'voice': 2,
+      'para-jumble': 2,
+      'fill-the-blank': 2,
+      'cloze-test': 2,
+      'passage': 2,
+      'hcf-and-lcm': 2,
+      'simplification': 2,
+      'ratio-and-proportion': 2,
+      'partnership': 2,
+      'mixture-and-alligation': 2,
+      'work-and-time': 2,
+      'pipes-and-cistern': 2,
+      'time-speed-and-distance': 2,
+      'race': 2,
+      'boat-and-stream': 2,
+      'percentage': 2,
+      'profit-and-loss': 2,
+      'simple-interest': 2,
+      'compound-interest': 2,
+      'installment': 2,
+      'average': 2,
+      'number-system': 2,
+      'trigonometry': 2,
+      'height-and-distance': 2,
+      'mensuration': 2,
+      'geometry': 2,
+      'algebra': 2,
+      'coordinate-geometry': 2,
+      'probability': 2,
+      'data-interpretation': 2,
+      'mean-median-mode': 2,
+      'theory': 2,
+      'previous-years-questions': 2,
+      '2023': 2,
+      '2024': 2,
+      '2025': 2
+    };
+
+    // Category and subcategory mapping
+    const categoryMap = {
+      'dance': 'static-gk',
+      'arts-personality': 'static-gk',
+      'arts-awards': 'static-gk',
+      'musical-instruments': 'static-gk',
+      'festivals': 'static-gk',
+      'fairs': 'static-gk',
+      'songs': 'static-gk',
+      'painting-dress-tribes': 'static-gk',
+      'first-in-india-world': 'static-gk',
+      'sports': 'static-gk',
+      'books-and-authors': 'static-gk',
+      'famous-personality': 'static-gk',
+      'important-days': 'static-gk',
+      'states-gk': 'static-gk',
+      'organization': 'static-gk',
+      'world-gk': 'static-gk',
+      'full-forms': 'static-gk',
+      'religious-places': 'static-gk',
+      'awards': 'static-gk',
+      'schemes': 'static-gk',
+      'important-events': 'static-gk',
+      'founder': 'static-gk',
+      'miscellaneous-static-gk': 'static-gk',
+      'ancient-history': 'general-knowledge',
+      'medieval-history': 'general-knowledge',
+      'modern-history': 'general-knowledge',
+      'constitution': 'general-knowledge',
+      'committee-reports': 'general-knowledge',
+      'parliament': 'general-knowledge',
+      'union-executive': 'general-knowledge',
+      'judiciary': 'general-knowledge',
+      'government-bodies': 'general-knowledge',
+      'polity-neighbouring-countries': 'general-knowledge',
+      'miscellaneous-polity': 'general-knowledge',
+      'physical-geography': 'general-knowledge',
+      'human-geography': 'general-knowledge',
+      'indian-geography': 'general-knowledge',
+      'world-geography': 'general-knowledge',
+      'microeconomics': 'general-knowledge',
+      'macroeconomics': 'general-knowledge',
+      'indian-economy': 'general-knowledge',
+      'global-economy': 'general-knowledge',
+      'physics': 'science',
+      'chemistry': 'science',
+      'human-body': 'science',
+      'plants-animals': 'science',
+      'deficiency-and-diseases': 'science',
+      'plant-kingdom': 'science',
+      'animal-kingdom': 'science',
+      'scientific-name': 'science',
+      'scientific-study': 'science',
+      'cell-basic-unit-of-life': 'science',
+      'order-and-ranking': 'reasoning',
+      'analogy': 'reasoning',
+      'odd-one-out': 'reasoning',
+      'coding-decoding': 'reasoning',
+      'series': 'reasoning',
+      'syllogism': 'reasoning',
+      'statement-and-conclusion': 'reasoning',
+      'data-sufficiency': 'reasoning',
+      'blood-relation': 'reasoning',
+      'venn-diagram': 'reasoning',
+      'sitting-arrangement': 'reasoning',
+      'direction-and-distance': 'reasoning',
+      'arithmetic-reason': 'reasoning',
+      'mathematical-operations': 'reasoning',
+      'word-arrangement': 'reasoning',
+      'age': 'reasoning',
+      'calendar': 'reasoning',
+      'missing-number': 'reasoning',
+      'inequality': 'reasoning',
+      'puzzle': 'reasoning',
+      'non-verbal-analogy': 'reasoning',
+      'nv-odd-one-out': 'reasoning',
+      'cube-and-dice': 'reasoning',
+      'non-verbal-series': 'reasoning',
+      'counting-figure': 'reasoning',
+      'paper-cut-and-fold': 'reasoning',
+      'embedded-figure': 'reasoning',
+      'figure-compilation': 'reasoning',
+      'mirror-image': 'reasoning',
+      'phrasal-verb': 'english',
+      'antonyms': 'english',
+      'synonyms': 'english',
+      'idioms': 'english',
+      'spelling-check': 'english',
+      'one-word': 'english',
+      'error': 'english',
+      'sentence-improvement': 'english',
+      'narration': 'english',
+      'voice': 'english',
+      'para-jumble': 'english',
+      'fill-the-blank': 'english',
+      'cloze-test': 'english',
+      'passage': 'english',
+      'hcf-and-lcm': 'mathematics',
+      'simplification': 'mathematics',
+      'ratio-and-proportion': 'mathematics',
+      'partnership': 'mathematics',
+      'mixture-and-alligation': 'mathematics',
+      'work-and-time': 'mathematics',
+      'pipes-and-cistern': 'mathematics',
+      'time-speed-and-distance': 'mathematics',
+      'race': 'mathematics',
+      'boat-and-stream': 'mathematics',
+      'percentage': 'mathematics',
+      'profit-and-loss': 'mathematics',
+      'simple-interest': 'mathematics',
+      'compound-interest': 'mathematics',
+      'installment': 'mathematics',
+      'average': 'mathematics',
+      'number-system': 'mathematics',
+      'trigonometry': 'mathematics',
+      'height-and-distance': 'mathematics',
+      'mensuration': 'mathematics',
+      'geometry': 'mathematics',
+      'algebra': 'mathematics',
+      'coordinate-geometry': 'mathematics',
+      'probability': 'mathematics',
+      'data-interpretation': 'mathematics',
+      'mean-median-mode': 'mathematics',
+      'theory': 'computer',
+      'previous-years-questions': 'computer',
+      '2023': 'current-affairs',
+      '2024': 'current-affairs',
+      '2025': 'current-affairs'
+    };
+
+    const subcategoryMap = {
+      'dance': 'cultural',
+      'arts-personality': 'cultural',
+      'arts-awards': 'cultural',
+      'musical-instruments': 'cultural',
+      'festivals': 'cultural',
+      'fairs': 'cultural',
+      'songs': 'cultural',
+      'painting-dress-tribes': 'cultural',
+      'first-in-india-world': 'key-facts',
+      'sports': 'key-facts',
+      'books-and-authors': 'key-facts',
+      'famous-personality': 'key-facts',
+      'important-days': 'key-facts',
+      'states-gk': 'geographical-administrative',
+      'organization': 'geographical-administrative',
+      'world-gk': 'geographical-administrative',
+      'full-forms': 'awards-schemes',
+      'religious-places': 'awards-schemes',
+      'awards': 'awards-schemes',
+      'schemes': 'awards-schemes',
+      'important-events': 'miscellaneous',
+      'founder': 'miscellaneous',
+      'miscellaneous-static-gk': 'miscellaneous',
+      'ancient-history': 'history',
+      'medieval-history': 'history',
+      'modern-history': 'history',
+      'constitution': 'polity',
+      'committee-reports': 'polity',
+      'parliament': 'polity',
+      'union-executive': 'polity',
+      'judiciary': 'polity',
+      'government-bodies': 'polity',
+      'polity-neighbouring-countries': 'polity',
+      'miscellaneous-polity': 'polity',
+      'physical-geography': 'geography',
+      'human-geography': 'geography',
+      'indian-geography': 'geography',
+      'world-geography': 'geography',
+      'microeconomics': 'economics',
+      'macroeconomics': 'economics',
+      'indian-economy': 'economics',
+      'global-economy': 'economics',
+      'physics': 'physics',
+      'chemistry': 'chemistry',
+      'human-body': 'biology',
+      'plants-animals': 'biology',
+      'deficiency-and-diseases': 'biology',
+      'plant-kingdom': 'biology',
+      'animal-kingdom': 'biology',
+      'scientific-name': 'biology',
+      'scientific-study': 'biology',
+      'cell-basic-unit-of-life': 'biology',
+      'order-and-ranking': 'verbal',
+      'analogy': 'verbal',
+      'odd-one-out': 'verbal',
+      'coding-decoding': 'verbal',
+      'series': 'verbal',
+      'syllogism': 'verbal',
+      'statement-and-conclusion': 'verbal',
+      'data-sufficiency': 'verbal',
+      'blood-relation': 'verbal',
+      'venn-diagram': 'verbal',
+      'sitting-arrangement': 'verbal',
+      'direction-and-distance': 'verbal',
+      'arithmetic-reason': 'verbal',
+      'mathematical-operations': 'verbal',
+      'word-arrangement': 'verbal',
+      'age': 'verbal',
+      'calendar': 'verbal',
+      'missing-number': 'verbal',
+      'inequality': 'verbal',
+      'puzzle': 'verbal',
+      'non-verbal-analogy': 'non-verbal',
+      'nv-odd-one-out': 'non-verbal',
+      'cube-and-dice': 'non-verbal',
+      'non-verbal-series': 'non-verbal',
+      'counting-figure': 'non-verbal',
+      'paper-cut-and-fold': 'non-verbal',
+      'embedded-figure': 'non-verbal',
+      'figure-compilation': 'non-verbal',
+      'mirror-image': 'non-verbal',
+      'phrasal-verb': 'vocab',
+      'antonyms': 'vocab',
+      'synonyms': 'vocab',
+      'idioms': 'vocab',
+      'spelling-check': 'vocab',
+      'one-word': 'vocab',
+      'error': 'grammar',
+      'sentence-improvement': 'grammar',
+      'narration': 'grammar',
+      'voice': 'grammar',
+      'para-jumble': 'comprehension',
+      'fill-the-blank': 'comprehension',
+      'cloze-test': 'comprehension',
+      'passage': 'comprehension',
+      'hcf-and-lcm': 'arithmetic',
+      'simplification': 'arithmetic',
+      'ratio-and-proportion': 'arithmetic',
+      'partnership': 'arithmetic',
+      'mixture-and-alligation': 'arithmetic',
+      'work-and-time': 'arithmetic',
+      'pipes-and-cistern': 'arithmetic',
+      'time-speed-and-distance': 'arithmetic',
+      'race': 'arithmetic',
+      'boat-and-stream': 'arithmetic',
+      'percentage': 'arithmetic',
+      'profit-and-loss': 'arithmetic',
+      'simple-interest': 'arithmetic',
+      'compound-interest': 'arithmetic',
+      'installment': 'arithmetic',
+      'average': 'arithmetic',
+      'number-system': 'arithmetic',
+      'trigonometry': 'advance',
+      'height-and-distance': 'advance',
+      'mensuration': 'advance',
+      'geometry': 'advance',
+      'algebra': 'advance',
+      'coordinate-geometry': 'advance',
+      'probability': 'advance',
+      'data-interpretation': 'advance',
+      'mean-median-mode': 'advance',
+      'theory': 'theory',
+      'previous-years-questions': 'previous-years-questions',
+      '2023': '2023',
+      '2024': '2024',
+      '2025': '2025'
+    };
+
+    // Toggle category dropdown
+    document.querySelectorAll('.category h2').forEach(header => {
+      header.addEventListener('click', () => {
+        const category = header.parentElement;
+        const isActive = category.classList.contains('active');
+        document.querySelectorAll('.category').forEach(cat => cat.classList.remove('active'));
+        if (!isActive) {
+          category.classList.add('active');
+        }
+      });
+    });
+
+    // Toggle subcategory dropdown
+    document.querySelectorAll('.subcategory h3').forEach(header => {
+      header.addEventListener('click', () => {
+        const subcategory = header.parentElement;
+        const isActive = subcategory.classList.contains('active');
+        document.querySelectorAll('.subcategory').forEach(sub => sub.classList.remove('active'));
+        if (!isActive) {
+          subcategory.classList.add('active');
+        }
+      });
+    });
+
+    // Show sets popup on subject click
+    document.querySelectorAll('.subject h4').forEach(header => {
+      header.addEventListener('click', () => {
+        const subjectText = header.textContent.trim();
+        const subject = subjectText.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+        const category = categoryMap[subject] || '';
+        const subcategory = subcategoryMap[subject] || '';
+        if (category && subcategory && setsData[subject]) {
+          showSetsPopup(category, subcategory, subject, subjectText);
+        } else {
+          console.error(`No sets found for subject: ${subject}`);
+        }
+      });
+    });
+
+    // Show sets popup
+    function showSetsPopup(category, subcategory, subject, subjectText) {
+      const popup = document.getElementById('sets-popup');
+      const overlay = document.getElementById('overlay');
+      const title = document.getElementById('popup-title');
+      const setsList = document.getElementById('set-list');
+      title.textContent = subjectText;
+      setsList.innerHTML = '';
+      if (setsData[subject]) {
+        for (let i = 1; i <= setsData[subject]; i++) {
+          const li = document.createElement('li');
+          li.textContent = `Set ${i}`;
+          li.addEventListener('click', () => {
+            window.location.href = `test.html?category=${category}&subcategory=${subcategory}&subject=${subject}&set=set${i}`;
+          });
+          setsList.appendChild(li);
+        }
+        popup.style.display = 'block';
+        overlay.style.display = 'block';
+      } else {
+        console.error(`No sets defined for subject: ${subject}`);
+      }
+    }
+
+    // Close popup
+    function closePopup() {
+      document.getElementById('sets-popup').style.display = 'none';
+      document.getElementById('overlay').style.display = 'none';
+    }
+
+    // View bookmarks
+    function viewBookmarks() {
+      const bookmarkedQuestions = JSON.parse(localStorage.getItem('bookmarkedQuestions')) || [];
+      const bookmarkedSection = document.querySelector('.category.bookmarked');
+      const subcategory = bookmarkedSection.querySelector('.subcategory');
+      if (!subcategory) {
+        const newSubcategory = document.createElement('div');
+        newSubcategory.className = 'subcategory';
+        newSubcategory.innerHTML = '<div id="bookmarked-questions"></div>';
+        bookmarkedSection.appendChild(newSubcategory);
+      }
+      const bookmarkedQuestionsDiv = document.getElementById('bookmarked-questions');
+      bookmarkedQuestionsDiv.innerHTML = '';
+      if (bookmarkedQuestions.length === 0) {
+        bookmarkedQuestionsDiv.innerHTML = '<p>No bookmarked questions.</p>';
+      } else {
+        bookmarkedQuestions.forEach(bookmark => {
+          const div = document.createElement('div');
+          div.className = 'subject';
+          div.innerHTML = `<h4>${bookmark.subject.replace('-', ' ').replace(/(^\w|\s\w)/g, m => m.toUpperCase())} - Set ${bookmark.set.replace('set', '')}</h4>`;
+          div.addEventListener('click', () => {
+            window.location.href = `test.html?category=${bookmark.category}&subcategory=${bookmark.subcategory}&subject=${bookmark.subject}&set=${bookmark.set}`;
+          });
+          bookmarkedQuestionsDiv.appendChild(div);
+        });
+      }
+      const isActive = bookmarkedSection.classList.contains('active');
+      document.querySelectorAll('.category').forEach(cat => cat.classList.remove('active'));
+      if (!isActive) {
+        bookmarkedSection.classList.add('active');
+      }
+    }
+
+    // Update progress bars
+    function updateProgress() {
+      let overallTotal = 0;
+      let overallAttempted = 0;
+      Object.keys(progressData).forEach(category => {
+        const progress = progressData[category];
+        overallTotal += progress.total;
+        overallAttempted += progress.attempted;
+        const percentage = progress.total ? (progress.attempted / progress.total) * 100 : 0;
+        const categoryElement = Array.from(document.querySelectorAll('.category h2')).find(el => el.textContent.toLowerCase().includes(category.replace('-', ' ')));
+        if (categoryElement) {
+          const progressBar = categoryElement.nextElementSibling.querySelector('.progress-bar-fill');
+          const progressText = categoryElement.querySelector('.progress-text');
+          progressBar.style.width = `${percentage}%`;
+          progressText.textContent = `${Math.round(percentage)}%`;
+        }
+      });
+      const overallPercentage = overallTotal ? (overallAttempted / overallTotal) * 100 : 0;
+      document.getElementById('overall-progress-text').textContent = `${Math.round(overallPercentage)}%`;
+      document.getElementById('overall-progress-bar').style.width = `${overallPercentage}%`;
+    }
+
+    // Reset progress
+    function resetProgress() {
+      const password = prompt('Enter password to reset progress:');
+      if (password === 'jeet148') {
+        progressData = {
+          'static-gk': { total: 0, attempted: 0 },
+          'general-knowledge': { total: 0, attempted: 0 },
+          'science': { total: 0, attempted: 0 },
+          'reasoning': { total: 0, attempted: 0 },
+          'english': { total: 0, attempted: 0 },
+          'mathematics': { total: 0, attempted: 0 },
+          'computer': { total: 0, attempted: 0 },
+          'current-affairs': { total: 0, attempted: 0 }
+        };
+        localStorage.setItem('progressData', JSON.stringify(progressData));
+        localStorage.removeItem('bookmarkedQuestions');
+        updateProgress();
+        alert('Progress reset successfully!');
+      } else {
+        alert('Incorrect password!');
+      }
+    }
+
+    // Theme toggle
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      const themeIcon = document.getElementById('theme-icon');
+      if (document.body.classList.contains('dark-mode')) {
+        themeIcon.src = 'https://img.icons8.com/ios-filled/24/ffffff/moon-symbol.png';
+      } else {
+        themeIcon.src = 'https://img.icons8.com/ios-filled/24/000000/sun.png';
+      }
+      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    }
+
+    // Load theme
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      document.getElementById('theme-icon').src = 'https://img.icons8.com/ios-filled/24/ffffff/moon-symbol.png';
+    }
+
+    // Load progress
+    window.onload = () => {
+      updateProgress();
+    };
+  </script>
+</body>
+</html>

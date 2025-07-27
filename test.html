@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSC Steno Practice Test</title>
+  <script src="questions.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      display: flex;
+      width: 100%;
+      max-width: 1200px;
+      margin: 20px auto;
+    }
+    .sidebar {
+      width: 25%;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-right: 20px;
+      max-height: 80vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-content {
+      flex-grow: 1;
+    }
+    .submit-btn-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .quiz-area {
+      width: 75%;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      position: relative;
+      transition: width 0.3s;
+    }
+    .quiz-area.full-width {
+      width: 100%;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .language-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .language-toggle select {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+    }
+    .question {
+      display: none;
+    }
+    .question.active {
+      display: block;
+    }
+    .options {
+      margin: 20px 0;
+    }
+    .options div {
+      margin: 10px 0;
+    }
+    .option-selection {
+      margin-top: 20px;
+    }
+    .option-selection label {
+      margin-right: 15px;
+    }
+    .nav-button {
+      padding: 8px;
+      margin: 5px;
+      border: 2px solid #ccc;
+      background: #f9f9f9;
+      cursor: pointer;
+      border-radius: 5px;
+      width: 40px;
+      text-align: center;
+      display: inline-block;
+    }
+    .nav-button.answered {
+      background: #28a745;
+      color: white;
+      border: 2px solid #28a745;
+    }
+    .nav-button.marked {
+      background: purple;
+      color: white;
+      border: 2px solid purple;
+    }
+    .nav-button.bookmarked {
+      background: #ffd700;
+      color: #333;
+      border: 2px solid #ffd700;
+    }
+    .nav-button:hover {
+      background: #ddd;
+    }
+    .nav-button.active {
+      border: 2px solid #007bff;
+    }
+    .action-buttons {
+      margin-top: 20px;
+    }
+    .action-buttons button, .sidebar button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      text-transform: capitalize;
+    }
+    .prev-btn {
+      background: #6c757d;
+      color: white;
+    }
+    .submit-next-btn {
+      background: #007bff;
+      color: white;
+    }
+    .mark-btn {
+      background: purple;
+      color: white;
+    }
+    .clear-btn {
+      background: #dc3545;
+      color: white;
+    }
+    .submit-btn {
+      background: #28a745;
+      color: white;
+    }
+    .bookmark-btn {
+      background: #ffd700;
+      color: #333;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      text-transform: capitalize;
+    }
+    .action-buttons button:hover, .sidebar button:hover, .bookmark-btn:hover {
+      opacity: 0.9;
+    }
+    #timer {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    #result {
+      display: none;
+      margin: 20px auto;
+      max-width: 90%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .result-item.correct {
+      background: #d4edda;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .result-item.incorrect {
+      background: #f8d7da;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .correct-option {
+      color: #28a745;
+      font-weight: bold;
+    }
+    .score-bar {
+      width: 50%;
+      height: 20px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px auto;
+    }
+    .score-bar-fill {
+      height: 100%;
+      background: red;
+      transition: width 0.5s;
+    }
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 20px;
+      }
+      .quiz-area {
+        width: 100%;
+      }
+      .quiz-area.full-width {
+        width: 100%;
+        max-width: 100%;
+        min-height: auto;
+      }
+      .nav-button {
+        width: 35px;
+        border: 2px solid #ccc;
+      }
+      .nav-button.answered {
+        border: 2px solid #28a745;
+      }
+      .nav-button.marked {
+        border: 2px solid purple;
+      }
+      .nav-button.bookmarked {
+        border: 2px solid #ffd700;
+      }
+      .language-toggle {
+        position: static;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .score-bar {
+        width: 80%;
+      }
+      #result {
+        max-width: 100%;
+        padding: 0 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <div class="sidebar-content">
+        <h3>Questions</h3>
+        <div id="nav-buttons"></div>
+      </div>
+      <div class="submit-btn-container">
+        <button class="submit-btn" onclick="submitQuiz()">Submit Test</button>
+      </div>
+    </div>
+    <div class="quiz-area">
+      <div class="language-toggle">
+        <select id="language" onchange="toggleLanguage()">
+          <option value="en">English</option>
+          <option value="hi">Hindi</option>
+        </select>
+      </div>
+      <h2 id="test-title">SSC Steno Practice Test</h2>
+      <div id="timer">Time Left: 30:00</div>
+      <div id="quiz"></div>
+      <div class="action-buttons">
+        <button class="prev-btn" onclick="prevQuestion()">Previous</button>
+        <button class="submit-next-btn" onclick="nextQuestion()">Submit & Next</button>
+        <button class="mark-btn" onclick="markForReview()">Mark for Review</button>
+        <button class="clear-btn" onclick="clearResponse()">Clear Response</button>
+      </div>
+      <div id="result"></div>
+    </div>
+  </div>
+  <script>
+    let currentQuestion = 0;
+    let score = 0;
+    let questions = [];
+    let answers = [];
+    let markedForReview = [];
+    let timeLeft = 1800; // 30 minutes in seconds
+    let timerInterval;
+    let currentLanguage = 'en';
+    let bookmarkedQuestions = JSON.parse(localStorage.getItem('bookmarkedQuestions')) || [];
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category');
+    const subcategory = urlParams.get('subcategory');
+    const subject = urlParams.get('subject');
+    const set = urlParams.get('set');
+    const isBookmarks = urlParams.get('bookmarks') === 'true';
+
+    // Load questions
+    if (isBookmarks) {
+      questions = bookmarkedQuestions;
+    } else {
+      try {
+        if (category && subcategory && subject && set && allQuestions[category]?.[subcategory]?.[subject]?.[set]) {
+          questions = allQuestions[category][subcategory][subject][set];
+        }
+      } catch (error) {
+        console.error('Error accessing questions:', error);
+      }
+    }
+
+    // Update test title
+    const testTitle = document.getElementById('test-title');
+    if (subject && set && !isBookmarks) {
+      testTitle.textContent = `SSC Steno Practice Test - ${subject.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} (Set ${set.replace('set', '')})`;
+    } else if (isBookmarks) {
+      testTitle.textContent = 'SSC Steno Practice Test - Bookmarked Questions';
+    } else {
+      testTitle.textContent = 'SSC Steno Practice Test - Invalid Set';
+    }
+
+    window.onload = () => {
+      if (typeof allQuestions === 'undefined' && !isBookmarks) {
+        document.getElementById('quiz').innerHTML = `<p class="error-message">Error loading questions. Please ensure questions.js is loaded correctly. <a href="navigation.html">Go Back</a></p>`;
+        return;
+      }
+      if (questions.length === 0) {
+        document.getElementById('quiz').innerHTML = `<p class="error-message">No questions available for this set: ${category}/${subcategory}/${subject}/${set}. <a href="navigation.html">Go Back</a></p>`;
+        return;
+      }
+      answers = new Array(questions.length).fill(null);
+      markedForReview = new Array(questions.length).fill(false);
+      loadNavButtons();
+      loadQuestion(currentQuestion);
+      startTimer();
+    };
+
+    function loadQuestion(index) {
+      const quizDiv = document.getElementById('quiz');
+      quizDiv.innerHTML = '';
+      if (questions.length === 0) {
+        quizDiv.innerHTML = `<p class="error-message">No questions available for this set. Please <a href="navigation.html">go back</a> and select another set.</p>`;
+        return;
+      }
+      const q = questions[index];
+      const questionDiv = document.createElement('div');
+      questionDiv.className = 'question active';
+      questionDiv.innerHTML = `
+        <p><strong>Question ${index + 1}:</strong> ${currentLanguage === 'en' ? q.question_en : q.question_hi}</p>
+        <div class="options">
+          ${(currentLanguage === 'en' ? q.options_en : q.options_hi).map((option, i) => `
+            <div onclick="selectOption(${i})">${String.fromCharCode(65 + i)}. ${option}</div>
+          `).join('')}
+        </div>
+        <div class="option-selection">
+          <p><strong>Select Option:</strong></p>
+          ${(currentLanguage === 'en' ? q.options_en : q.options_hi).map((option, i) => `
+            <label><input type="radio" name="q${index}" value="${i}" ${answers[index] === i ? 'checked' : ''}> ${String.fromCharCode(65 + i)}</label>
+          `).join('')}
+        </div>
+      `;
+      quizDiv.appendChild(questionDiv);
+      updateNavButtons();
+    }
+
+    function selectOption(index) {
+      answers[currentQuestion] = index;
+      document.querySelectorAll(`input[name="q${currentQuestion}"]`).forEach((input, i) => {
+        input.checked = i === index;
+      });
+      updateNavButtons();
+    }
+
+    function loadNavButtons() {
+      const navDiv = document.getElementById('nav-buttons');
+      navDiv.innerHTML = '';
+      if (questions.length === 0) return;
+      questions.forEach((_, i) => {
+        const btn = document.createElement('button');
+        btn.className = `nav-button ${answers[i] !== null ? 'answered' : markedForReview[i] ? 'marked' : ''} ${isBookmarked(i) ? 'bookmarked' : ''} ${i === currentQuestion ? 'active' : ''}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => {
+          saveAnswer();
+          currentQuestion = i;
+          loadQuestion(i);
+        };
+        navDiv.appendChild(btn);
+      });
+    }
+
+    function updateNavButtons() {
+      const buttons = document.querySelectorAll('.nav-button');
+      buttons.forEach((btn, i) => {
+        btn.className = `nav-button ${answers[i] !== null ? 'answered' : markedForReview[i] ? 'marked' : ''} ${isBookmarked(i) ? 'bookmarked' : ''} ${i === currentQuestion ? 'active' : ''}`;
+      });
+    }
+
+    function prevQuestion() {
+      saveAnswer();
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        loadQuestion(currentQuestion);
+      }
+    }
+
+    function nextQuestion() {
+      saveAnswer();
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        loadQuestion(currentQuestion);
+      } else {
+        submitQuiz();
+      }
+    }
+
+    function markForReview() {
+      saveAnswer();
+      if (answers[currentQuestion] === null) {
+        markedForReview[currentQuestion] = !markedForReview[currentQuestion];
+      }
+      updateNavButtons();
+    }
+
+    function clearResponse() {
+      answers[currentQuestion] = null;
+      document.querySelectorAll(`input[name="q${currentQuestion}"]`).forEach(input => input.checked = false);
+      updateNavButtons();
+    }
+
+    function saveAnswer() {
+      const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
+      answers[currentQuestion] = selected ? parseInt(selected.value) : null;
+      if (answers[currentQuestion] !== null) {
+        markedForReview[currentQuestion] = false;
+      }
+    }
+
+    function toggleBookmark(index) {
+      const question = questions[index];
+      const bookmarkKey = isBookmarks ? question.key : `${category}/${subcategory}/${subject}/${set}/${index}`;
+      const bookmarkIndex = bookmarkedQuestions.findIndex(bq => bq.key === bookmarkKey);
+      if (bookmarkIndex === -1) {
+        bookmarkedQuestions.push({ ...question, key: bookmarkKey });
+      } else {
+        bookmarkedQuestions.splice(bookmarkIndex, 1);
+      }
+      localStorage.setItem('bookmarkedQuestions', JSON.stringify(bookmarkedQuestions));
+      submitQuiz(); // Refresh result screen to update bookmark button text
+    }
+
+    function isBookmarked(index) {
+      const bookmarkKey = isBookmarks ? questions[index].key : `${category}/${subcategory}/${subject}/${set}/${index}`;
+      return bookmarkedQuestions.some(bq => bq.key === bookmarkKey);
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          submitQuiz();
+        } else {
+          timeLeft--;
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          document.getElementById('timer').textContent = `Time Left: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+      }, 1000);
+    }
+
+    function submitQuiz() {
+      saveAnswer();
+      clearInterval(timerInterval);
+      score = 0;
+      let correctCount = 0;
+      let incorrectCount = 0;
+      let notAttemptedCount = 0;
+      questions.forEach((q, i) => {
+        if (answers[i] !== null && q.options_en[answers[i]] === q.answer_en) {
+          score++;
+          correctCount++;
+        } else if (answers[i] !== null) {
+          incorrectCount++;
+        } else {
+          notAttemptedCount++;
+        }
+      });
+      document.querySelector('.quiz-area').classList.add('full-width');
+      document.querySelector('.sidebar').style.display = 'none';
+      const quizDiv = document.getElementById('quiz');
+      quizDiv.style.display = 'none';
+      document.querySelector('.action-buttons').style.display = 'none';
+      const resultDiv = document.getElementById('result');
+      let resultHTML = `
+        <h3>SSC Steno Practice Test - ${isBookmarks ? 'Bookmarked Questions' : `${subject.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} (Set ${set.replace('set', '')})`}</h3>
+        <div class="score-bar"><div class="score-bar-fill" style="width: ${questions.length > 0 ? (score / questions.length) * 100 : 0}%"></div></div>
+        <h3>Test Result</h3>
+        <p style="color: #28a745;">Percentage: ${questions.length > 0 ? ((score / questions.length) * 100).toFixed(2) : 0}%</p>
+      `;
+      if (questions.length === 0) {
+        resultHTML += `<p class="error-message">No questions available for this set. Please <a href="navigation.html">go back</a> and select another set.</p>`;
+      } else {
+        questions.forEach((q, index) => {
+          const isCorrect = answers[index] !== null && q.options_en[answers[index]] === q.answer_en;
+          resultHTML += `
+            <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+              <p><strong>Question ${index + 1}:</strong> ${currentLanguage === 'en' ? q.question_en : q.question_hi}</p>
+              <p>Your Answer: <span style="color: ${isCorrect ? '#28a745' : '#dc3545'}">${answers[index] !== null ? String.fromCharCode(65 + answers[index]) : 'Not Attempted'}</span></p>
+              <p>Correct Answer: <span class="correct-option">${q.options_en.indexOf(q.answer_en) !== -1 ? String.fromCharCode(65 + q.options_en.indexOf(q.answer_en)) : 'N/A'}</span></p>
+              <p>Solution: ${currentLanguage === 'en' ? q.explanation_en : q.explanation_hi}</p>
+              <p>${isCorrect ? '<span style="color: #28a745;">Correct</span>' : '<span style="color: #dc3545;">Incorrect</span>'}</p>
+              <button class="bookmark-btn" onclick="toggleBookmark(${index})">${isBookmarked(index) ? 'Remove Bookmark' : 'Bookmark'}</button>
+            </div>
+            <hr>
+          `;
+        });
+        resultHTML += `<h3>Your Score: ${score}/${questions.length}</h3>`;
+        resultHTML += `<p style="color: #28a745;">Percentage: ${(score / questions.length) * 100}%</p>`;
+        resultHTML += `<p>Correct Answers: ${correctCount}</p>`;
+        resultHTML += `<p>Incorrect Answers: ${incorrectCount}</p>`;
+        resultHTML += `<p>Not Attempted: ${notAttemptedCount}</p>`;
+      }
+      resultDiv.innerHTML = resultHTML;
+      resultDiv.style.display = 'flex';
+      if (!isBookmarks && category && subcategory && subject && set) {
+        let progressData = JSON.parse(localStorage.getItem('progressData')) || {};
+        if (!progressData[category]) {
+          progressData[category] = { total: 0, attempted: 0 };
+        }
+        progressData[category].total += questions.length;
+        progressData[category].attempted += score;
+        localStorage.setItem('progressData', JSON.stringify(progressData));
+      }
+    }
+
+    function toggleLanguage() {
+      currentLanguage = document.getElementById('language').value;
+      const resultDiv = document.getElementById('result');
+      if (resultDiv.style.display === 'flex') {
+        submitQuiz();
+      } else {
+        loadQuestion(currentQuestion);
+      }
+    }
+  </script>
+</body>
+</html>
