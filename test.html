@@ -485,7 +485,9 @@
       let incorrectCount = 0;
       let notAttemptedCount = 0;
       questions.forEach((q, i) => {
-        if (answers[i] !== null && q.options_en[answers[i]] === q.answer_en) {
+        // Map correct answer letter (e.g., 'c') to index (e.g., 2)
+        const correctIndex = q.correct && /[a-d]/i.test(q.correct) ? q.correct.toLowerCase().charCodeAt(0) - 97 : -1;
+        if (answers[i] !== null && correctIndex !== -1 && answers[i] === correctIndex) {
           score++;
           correctCount++;
         } else if (answers[i] !== null) {
@@ -510,13 +512,17 @@
         resultHTML += `<p class="error-message">No questions available for this set. Please <a href="navigation.html">go back</a> and select another set.</p>`;
       } else {
         questions.forEach((q, index) => {
-          const isCorrect = answers[index] !== null && q.options_en[answers[index]] === q.answer_en;
+          // Map correct answer letter (e.g., 'c') to index (e.g., 2)
+          const correctIndex = q.correct && /[a-d]/i.test(q.correct) ? q.correct.toLowerCase().charCodeAt(0) - 97 : -1;
+          const isCorrect = answers[index] !== null && correctIndex !== -1 && answers[index] === correctIndex;
+          // Safely get explanation with fallback
+          const explanation = (currentLanguage === 'en' ? (q.solution_en || 'No explanation available') : (q.solution_hi || 'No explanation available'));
           resultHTML += `
             <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
               <p><strong>Question ${index + 1}:</strong> ${currentLanguage === 'en' ? q.question_en : q.question_hi}</p>
               <p>Your Answer: <span style="color: ${isCorrect ? '#28a745' : '#dc3545'}">${answers[index] !== null ? String.fromCharCode(65 + answers[index]) : 'Not Attempted'}</span></p>
-              <p>Correct Answer: <span class="correct-option">${q.options_en.indexOf(q.answer_en) !== -1 ? String.fromCharCode(65 + q.options_en.indexOf(q.answer_en)) : 'N/A'}</span></p>
-              <p>Solution: ${currentLanguage === 'en' ? q.explanation_en : q.explanation_hi}</p>
+              <p>Correct Answer: <span class="correct-option">${correctIndex !== -1 ? String.fromCharCode(65 + correctIndex) : 'N/A'}</span></p>
+              <p>Solution: ${explanation}</p>
               <p>${isCorrect ? '<span style="color: #28a745;">Correct</span>' : '<span style="color: #dc3545;">Incorrect</span>'}</p>
               <button class="bookmark-btn" onclick="toggleBookmark(${index})">${isBookmarked(index) ? 'Remove Bookmark' : 'Bookmark'}</button>
             </div>
