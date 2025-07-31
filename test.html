@@ -298,6 +298,10 @@
     let timerInterval;
     let currentLanguage = 'en';
     let bookmarkedQuestions = JSON.parse(localStorage.getItem('bookmarkedQuestions')) || [];
+    
+    // Variables to track time spent on each question
+    let timeTaken = [];
+    let questionStartTime;
 
     const urlParams = new URLSearchParams(window.location.search);
     const category = urlParams.get('category');
@@ -339,6 +343,8 @@
         return;
       }
       answers = new Array(questions.length).fill(null);
+      // Initialize time taken array for each question
+      timeTaken = new Array(questions.length).fill(0);
       markedForReview = new Array(questions.length).fill(false);
       loadNavButtons();
       loadQuestion(currentQuestion);
@@ -371,6 +377,16 @@
       `;
       quizDiv.appendChild(questionDiv);
       updateNavButtons();
+      // Record the time when the question is loaded
+      questionStartTime = Date.now();
+    }
+    
+    // Function to calculate and store time spent on a question
+    function recordTime() {
+        if (questionStartTime) {
+            const timeSpent = (Date.now() - questionStartTime) / 1000; // time in seconds
+            timeTaken[currentQuestion] += timeSpent;
+        }
     }
 
     function selectOption(index) {
@@ -390,6 +406,7 @@
         btn.className = `nav-button ${answers[i] !== null ? 'answered' : markedForReview[i] ? 'marked' : ''} ${isBookmarked(i) ? 'bookmarked' : ''} ${i === currentQuestion ? 'active' : ''}`;
         btn.innerText = i + 1;
         btn.onclick = () => {
+          recordTime(); // Record time before switching
           saveAnswer();
           currentQuestion = i;
           loadQuestion(i);
@@ -406,6 +423,7 @@
     }
 
     function prevQuestion() {
+      recordTime(); // Record time before switching
       saveAnswer();
       if (currentQuestion > 0) {
         currentQuestion--;
@@ -414,6 +432,7 @@
     }
 
     function nextQuestion() {
+      recordTime(); // Record time before switching
       saveAnswer();
       if (currentQuestion < questions.length - 1) {
         currentQuestion++;
@@ -455,7 +474,7 @@
         bookmarkedQuestions.splice(bookmarkIndex, 1);
       }
       localStorage.setItem('bookmarkedQuestions', JSON.stringify(bookmarkedQuestions));
-      submitQuiz(); // Refresh result screen to update bookmark button text
+      // This function is no longer called from the result screen, but is kept for potential future use.
     }
 
     function isBookmarked(index) {
@@ -478,24 +497,29 @@
     }
 
     function submitQuiz() {
+      recordTime(); // Record time for the last question
       saveAnswer();
       clearInterval(timerInterval);
+      
+      // Updated scoring logic with negative marking
       score = 0;
       let correctCount = 0;
       let incorrectCount = 0;
       let notAttemptedCount = 0;
       questions.forEach((q, i) => {
-        // Map correct answer letter (e.g., 'c') to index (e.g., 2)
         const correctIndex = q.correct && /[a-d]/i.test(q.correct) ? q.correct.toLowerCase().charCodeAt(0) - 97 : -1;
-        if (answers[i] !== null && correctIndex !== -1 && answers[i] === correctIndex) {
-          score++;
-          correctCount++;
-        } else if (answers[i] !== null) {
-          incorrectCount++;
+        if (answers[i] !== null) {
+            if (correctIndex !== -1 && answers[i] === correctIndex) {
+                correctCount++;
+            } else {
+                incorrectCount++;
+            }
         } else {
-          notAttemptedCount++;
+            notAttemptedCount++;
         }
       });
+      score = correctCount - (incorrectCount * 0.25);
+
       document.querySelector('.quiz-area').classList.add('full-width');
       document.querySelector('.sidebar').style.display = 'none';
       const quizDiv = document.getElementById('quiz');
@@ -504,7 +528,7 @@
       const resultDiv = document.getElementById('result');
       let resultHTML = `
         <h3>SSC Steno Practice Test - ${isBookmarks ? 'Bookmarked Questions' : `${subject.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} (Set ${set.replace('set', '')})`}</h3>
-        <div class="score-bar"><div class="score-bar-fill" style="width: ${questions.length > 0 ? (score / questions.length) * 100 : 0}%"></div></div>
+        <div class="score-bar"><div class="score-bar-fill" style="width: ${questions.length > 0 ? Math.max(0, (score / questions.length) * 100) : 0}%"></div></div>
         <h3>Test Result</h3>
         <p style="color: #28a745;">Percentage: ${questions.length > 0 ? ((score / questions.length) * 100).toFixed(2) : 0}%</p>
       `;
@@ -512,11 +536,16 @@
         resultHTML += `<p class="error-message">No questions available for this set. Please <a href="navigation.html">go back</a> and select another set.</p>`;
       } else {
         questions.forEach((q, index) => {
-          // Map correct answer letter (e.g., 'c') to index (e.g., 2)
           const correctIndex = q.correct && /[a-d]/i.test(q.correct) ? q.correct.toLowerCase().charCodeAt(0) - 97 : -1;
           const isCorrect = answers[index] !== null && correctIndex !== -1 && answers[index] === correctIndex;
-          // Safely get explanation with fallback
           const explanation = (currentLanguage === 'en' ? (q.solution_en || 'No explanation available') : (q.solution_hi || 'No explanation available'));
+          
+          // Format time taken for display
+          const timeForQuestion = timeTaken[index];
+          const timeInMinutes = Math.floor(timeForQuestion / 60);
+          const timeInSeconds = Math.floor(timeForQuestion % 60);
+          const timeString = `${timeInMinutes}m ${timeInSeconds}s`;
+
           resultHTML += `
             <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
               <p><strong>Question ${index + 1}:</strong> ${currentLanguage === 'en' ? q.question_en : q.question_hi}</p>
@@ -524,13 +553,13 @@
               <p>Correct Answer: <span class="correct-option">${correctIndex !== -1 ? String.fromCharCode(65 + correctIndex) : 'N/A'}</span></p>
               <p>Solution: ${explanation}</p>
               <p>${isCorrect ? '<span style="color: #28a745;">Correct</span>' : '<span style="color: #dc3545;">Incorrect</span>'}</p>
-              <button class="bookmark-btn" onclick="toggleBookmark(${index})">${isBookmarked(index) ? 'Remove Bookmark' : 'Bookmark'}</button>
+              <div style="background-color: #ff4444; color: white; padding: 5px; border-radius: 5px; margin-top: 10px;">Time Taken: ${timeString}</div>
             </div>
             <hr>
           `;
         });
-        resultHTML += `<h3>Your Score: ${score}/${questions.length}</h3>`;
-        resultHTML += `<p style="color: #28a745;">Percentage: ${(score / questions.length) * 100}%</p>`;
+        // Display final score with negative marking
+        resultHTML += `<h3>Your Score: ${score.toFixed(2)}/${questions.length}</h3>`;
         resultHTML += `<p>Correct Answers: ${correctCount}</p>`;
         resultHTML += `<p>Incorrect Answers: ${incorrectCount}</p>`;
         resultHTML += `<p>Not Attempted: ${notAttemptedCount}</p>`;
