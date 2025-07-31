@@ -545,6 +545,15 @@
           const timeInMinutes = Math.floor(timeForQuestion / 60);
           const timeInSeconds = Math.floor(timeForQuestion % 60);
           const timeString = `${timeInMinutes}m ${timeInSeconds}s`;
+          
+          // Determine highlight color based on time taken
+          let timeHighlightColor = '#ffc107'; // Default yellow for times between 45s and 60s
+          if (timeForQuestion < 45) {
+            timeHighlightColor = '#49D45E'; // Green for under 45 seconds
+          } else if (timeForQuestion > 60) {
+            timeHighlightColor = '#ff4444'; // Red for over 60 seconds
+          }
+
 
           resultHTML += `
             <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
@@ -553,7 +562,7 @@
               <p>Correct Answer: <span class="correct-option">${correctIndex !== -1 ? String.fromCharCode(65 + correctIndex) : 'N/A'}</span></p>
               <p>Solution: ${explanation}</p>
               <p>${isCorrect ? '<span style="color: #28a745;">Correct</span>' : '<span style="color: #dc3545;">Incorrect</span>'}</p>
-              <div style="background-color: #ff4444; color: white; padding: 5px; border-radius: 5px; margin-top: 10px;">Time Taken: ${timeString}</div>
+              <div style="background-color: ${timeHighlightColor}; color: white; padding: 5px; border-radius: 5px; margin-top: 10px;">Time Taken: ${timeString}</div>
             </div>
             <hr>
           `;
